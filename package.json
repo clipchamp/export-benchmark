@@ -5,5 +5,8 @@
   "repository": "https://github.com/sbalko/export-performance.git",
   "author": "Sören Balko <soerenbalko@microsoft.com>",
   "license": "UNLICENSED",
-  "private": true
+  "private": true,
+  "devDependencies": {
+    "typescript": "^5.4.5"
+  }
 }
