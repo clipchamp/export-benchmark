@@ -1,0 +1,9 @@
+{
+  "name": "export-benchmark",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "https://github.com/sbalko/export-performance.git",
+  "author": "Sören Balko <soerenbalko@microsoft.com>",
+  "license": "UNLICENSED",
+  "private": true
+}
