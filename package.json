@@ -7,6 +7,22 @@
   "license": "UNLICENSED",
   "private": true,
   "devDependencies": {
-    "typescript": "^5.4.5"
+    "@types/core-js": "^2.5.8",
+    "@types/jquery": "^3.5.30",
+    "clean-webpack-plugin": "^4.0.0",
+    "copy-webpack-plugin": "^12.0.2",
+    "ts-loader": "^9.5.1",
+    "typescript": "^5.4.5",
+    "webpack": "^5.91.0",
+    "webpack-cli": "^5.1.4"
+  },
+  "scripts": {
+    "clean": "rm -rf dist",
+    "build": "yarn run clean; NODE_ENV=dev webpack",
+    "build:prod": "yarn run clean; NODE_ENV=prod webpack",
+    "watch": "NODE_ENV=dev webpack --watch"
+  },
+  "dependencies": {
+    "nal-extractor": "^1.0.1"
   }
 }
