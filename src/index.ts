@@ -1,3 +1,4 @@
+import 'bootstrap/dist/css/bootstrap.min.css'
 import { AvcBitstream } from "./decoder/bitstream";
 
 console.log('Hello world');

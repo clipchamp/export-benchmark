@@ -7,10 +7,14 @@
   "license": "UNLICENSED",
   "private": true,
   "devDependencies": {
+    "@types/bootstrap": "^5.2.10",
     "@types/core-js": "^2.5.8",
     "@types/jquery": "^3.5.30",
     "clean-webpack-plugin": "^4.0.0",
     "copy-webpack-plugin": "^12.0.2",
+    "css-loader": "^7.1.2",
+    "http-server": "^14.1.1",
+    "style-loader": "^4.0.0",
     "ts-loader": "^9.5.1",
     "typescript": "^5.4.5",
     "webpack": "^5.91.0",
@@ -23,6 +27,8 @@
     "watch": "NODE_ENV=dev webpack --watch"
   },
   "dependencies": {
+    "bootstrap": "^5.3.3",
+    "jquery": "^3.7.1",
     "nal-extractor": "^1.0.1"
   }
 }
