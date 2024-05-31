@@ -10,7 +10,9 @@ jobs:
         with:
           lfs: true # pull down video files from LFS
       - name: Checkout LFS files
-        run: git lfs checkout
+        run: |
+          git lfs checkout
+          ls -lisa src/resources/videos
       - name: Install dependencies
         uses: borales/actions-yarn@v5
         with:
