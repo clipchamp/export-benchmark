@@ -12,8 +12,8 @@ jobs:
         with:
           cmd: install # will run `yarn install` command
       - name: Production build
-         uses: borales/actions-yarn@v4
-         with:
+        uses: borales/actions-yarn@v4
+        with:
           cmd: build:prod # will run `yarn build:prod` command
       - name: Upload Pages Artefact
         uses: actions/upload-pages-artifact@v3
