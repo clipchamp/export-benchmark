@@ -7,6 +7,8 @@ jobs:
     steps:
       - name: Check out repository code
         uses: actions/checkout@v4
+        with:
+          lfs: true # pull down video files from LFS
       - name: Install dependencies
         uses: borales/actions-yarn@v4
         with:
