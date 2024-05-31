@@ -4,6 +4,10 @@ jobs:
   # Build job
   build:
     runs-on: ubuntu-latest
+    permissions:
+      pages: write      # to deploy to Pages
+      id-token: write   # to verify the deployment originates from an appropriate source    
+      contents: write
     steps:
       - name: Check out repository code
         uses: actions/checkout@v4
@@ -21,31 +25,36 @@ jobs:
         uses: borales/actions-yarn@v5
         with:
           cmd: build:prod # will run `yarn build:prod` command
-      - name: Upload Pages Artefact
-        uses: actions/upload-pages-artifact@v3
+      - name: GitHub Pages deployment
+        uses: peaceiris/actions-gh-pages@v4
         with:
-          name: github-pages
-          path: dist # Path to your built static files
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./dist
+  #     - name: Upload Pages Artefact
+  #       uses: actions/upload-pages-artifact@v3
+  #       with:
+  #         name: github-pages
+  #         path: dist # Path to your built static files
 
-  # Deploy job
-  deploy:
-    # Add a dependency to the build job
-    needs: build
+  # # Deploy job
+  # deploy:
+  #   # Add a dependency to the build job
+  #   needs: build
 
-    # Grant GITHUB_TOKEN the permissions required to make a Pages deployment
-    permissions:
-      pages: write      # to deploy to Pages
-      id-token: write   # to verify the deployment originates from an appropriate source
+  #   # Grant GITHUB_TOKEN the permissions required to make a Pages deployment
+  #   permissions:
+  #     pages: write      # to deploy to Pages
+  #     id-token: write   # to verify the deployment originates from an appropriate source
 
-    # Deploy to the github-pages environment
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
+  #   # Deploy to the github-pages environment
+  #   environment:
+  #     name: github-pages
+  #     url: ${{ steps.deployment.outputs.page_url }}
 
-    # Specify runner + deployment step
-    runs-on: ubuntu-latest
-    steps:
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4 # or specific "vX.X.X" version tag for this action
+  #   # Specify runner + deployment step
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Deploy to GitHub Pages
+  #       id: deployment
+  #       uses: actions/deploy-pages@v4 # or specific "vX.X.X" version tag for this action
 
