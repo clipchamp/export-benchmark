@@ -10,16 +10,17 @@ jobs:
         with:
           lfs: true # pull down video files from LFS
       - name: Install dependencies
-        uses: borales/actions-yarn@v4
+        uses: borales/actions-yarn@v5
         with:
           cmd: install # will run `yarn install` command
       - name: Production build
-        uses: borales/actions-yarn@v4
+        uses: borales/actions-yarn@v5
         with:
           cmd: build:prod # will run `yarn build:prod` command
       - name: Upload Pages Artefact
         uses: actions/upload-pages-artifact@v3
         with:
+          name: github-pages
           path: dist # Path to your built static files
 
   # Deploy job
