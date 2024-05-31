@@ -3,7 +3,7 @@ on: [push]
 jobs:
   # Build job
   build:
-    runs-un: ubuntu-latest
+    runs-on: ubuntu-latest
     steps:
       - name: Check out repository code
         uses: actions/checkout@v4
