@@ -1,6 +1,6 @@
 import { AvcNalu, NalUnitType } from "./interfaces";
 
-const ONE_SECOND_IN_MICROS = 1e6;
+const ONE_SECOND_IN_MICROS = 1e6;   
 
 export class EncodedVideoChunkTransformer implements Transformer<AvcNalu, EncodedVideoChunk> {
     private seqno = 0;
@@ -20,14 +20,18 @@ export class EncodedVideoChunkTransformer implements Transformer<AvcNalu, Encode
         return Math.floor(ONE_SECOND_IN_MICROS * (this.seqno ++) / this.frameRate);
     }
 
-    transform({ naluType, naluBody }: AvcNalu, controller: TransformStreamDefaultController<EncodedVideoChunk>): void {
+    start(): void {}
+
+    transform({ naluType, naluBody, completeNalu }: AvcNalu, controller: TransformStreamDefaultController<EncodedVideoChunk>): void {
         if (naluType === NalUnitType.CODED_SLICE_IDR || naluType === NalUnitType.CODED_SLICE_NON_IDR) {
             controller.enqueue(new EncodedVideoChunk({
-                data: naluBody.subarray(1),
+                data: completeNalu,
                 type: naluType === NalUnitType.CODED_SLICE_IDR ? 'key' : 'delta',
                 timestamp: this.calculateFrameTimestamp(),
                 duration: this.duration,
             }));
+        } else {
+            controller.enqueue(undefined);
         }
     }
 }

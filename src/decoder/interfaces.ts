@@ -33,12 +33,14 @@ export enum NalUnitType {
     UNSPECIFIED_9 = 31,
 }
 
-export const NALU_PREFIX = [0x00, 0x00, 0x00, 0x01];
+export const NALU_LONG_PREFIX = [0x00, 0x00, 0x00, 0x01];
+export const NALU_SHORT_PREFIX = [0x00, 0x00, 0x01];
 
 export interface AvcNalu<T extends NalUnitType = NalUnitType> {
     readonly naluType: T;
     readonly refIdc: number;
     readonly naluBody: Uint8Array;
+    readonly completeNalu: Uint8Array;
 }
 
 export function isTypedNalu<T extends NalUnitType>(nalu: AvcNalu, type: T): nalu is AvcNalu<T> {

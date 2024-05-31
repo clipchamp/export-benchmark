@@ -52,3 +52,13 @@ export function searchPattern<T>(text: ArrayLike<T>, search: ArrayLike<T>): numb
 
     return matches;
 }
+
+export function startsWith<T>(text: ArrayLike<T>, prefix: ArrayLike<T>): boolean {
+    for (let i = 0, ii = prefix.length; i < ii; ++i) {
+        if (text[i] !== prefix[i]) {
+            return false;
+        }
+    }
+
+    return true;
+}

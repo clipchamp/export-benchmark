@@ -24,11 +24,14 @@
     "clean": "rm -rf dist",
     "build": "yarn run clean; NODE_ENV=dev webpack",
     "build:prod": "yarn run clean; NODE_ENV=prod webpack",
-    "watch": "NODE_ENV=dev webpack --watch"
+    "watch": "NODE_ENV=dev webpack --watch",
+    "serve": "http-server dist -d"
   },
   "dependencies": {
     "bootstrap": "^5.3.3",
+    "h264-sps-parser": "^0.2.1",
     "jquery": "^3.7.1",
+    "mp4box": "^0.5.2",
     "nal-extractor": "^1.0.1"
   }
 }

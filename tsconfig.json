@@ -20,7 +20,6 @@
     "noImplicitAny": true,
     "moduleResolution": "Node",
     "strict": true,
-    
   },
   "exclude": ["**/*.spec.ts"]
 }

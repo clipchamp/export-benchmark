@@ -6,9 +6,148 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Clipchamp Export Benchmark</title>
 
+    <style>
+        #decoder-canvas {
+            border: 1px black solid;
+        }
+    </style>
 </head>
 
 <body>
+    <div class="container container-md">
+        <main>
+            <div class="py-5 text-center">
+                <h1>Clipchamp Export Benchmark</h1>
+            </div>
+
+            <div id="decoder-settings" class="row">
+                <div class="mb-3">
+                    <h3>Decoder settings</h3>
+                </div>
+                <div class="mb-3">
+                    <label for="input-file" class="form-label">Input file:</label>
+                    <select id="input-file" class="form-select">
+                        <option value="sample_480p_30fps.mp4">sample_480p_30fps.mp4</option>
+                        <option value="sample_720p_30fps.mp4">sample_720p_30fps.mp4</option>
+                        <option selected value="sample_1080p_30fps.mp4">sample_1080p_30fps.mp4</option>
+                        <option value="sample_1440p_30fps.mp4">sample_1440p_30fps.mp4</option>
+                        <option value="sample_4K_30fps.mp4">sample_4K_30fps.mp4</option>
+                    </select>
+                </div>
+
+                <div class="mb-3">
+                    <label for="decoder-acceleration" class="form-label">Hardware acceleration (decoder):</label>
+                    <select id="decoder-acceleration" class="form-select">
+                        <option value="prefer-hardware">prefer-hardware</option>
+                        <option value="prefer-software">prefer-software</option>
+                        <option selected value="no-preference">no-preference</option>
+                    </select>
+                </div>
+
+                <div class="mb-3">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="decoder-output" checked>
+                        <label class="form-check-label" for="decoder-output">
+                            Show decoded frames
+                        </label>
+                    </div>
+                    <canvas id="decoder-canvas" width="640" height="360"></canvas>
+                </div>
+            </div>
+
+            <div id="decoder-settings" class="row">
+                <div class="mb-3">
+                    <h3>Encoder settings</h3>
+                </div>
+            
+                <div class="mb-3">
+                    <label for="output-resolution" class="form-label">Output resolution:</label>
+                    <select id="output-resolution" class="form-select">
+                        <option value="480p">480p</option>
+                        <option value="720p">720p</option>
+                        <option selected value="1080p">1080p</option>
+                        <option value="1440p">1440p</option>
+                        <option value="4K">4K</option>
+                    </select>
+                </div>
+                
+                <div class="mb-3">
+                    <label for="h264-profile" class="form-label">H.264 profile:</label>
+                    <select id="h264-profile" class="form-select">
+                        <option value="baseline">baseline</option>
+                        <option value="main">main</option>
+                        <option selected value="high">high</option>
+                    </select>
+                </div>
+
+                <div class="mb-3">
+                    <label for="encoder-acceleration" class="form-label">Hardware acceleration (encoder):</label>
+                    <select id="encoder-acceleration" class="form-select">
+                        <option value="prefer-hardware">prefer-hardware</option>
+                        <option value="prefer-software">prefer-software</option>
+                        <option selected value="no-preference">no-preference</option>
+                    </select>
+                </div>
+
+                <div class="mb-3">
+                    <label for="encoding-bitrate" class="form-label">Encoding bitrate:</label>
+                    <input id="encoding-bitrate" class="form-control" type="number" min="0" step="500000" value="2000000">
+                </div>
+
+                <div class="mb-3">
+                    <label for="bitrate-mode" class="form-label">Bitrate mode::</label>
+                    <select id="bitrate-mode" class="form-select">
+                        <option selected value="variable">variable</option>
+                        <option value="constant">constant</option>
+                        <option value="quantizer">quantizer</option>
+                    </select>
+                </div>
+
+                <div class="mb-3">
+                    <label for="latency-mode" class="form-label">Latency mode:</label>
+                    <select id="latency-mode" class="form-select">
+                        <option selected value="quality">quality</option>
+                        <option value="realtime">realtime</option>
+                    </select>
+                </div>
+
+                <div class="mb-3">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="progress-update" checked>
+                        <label class="form-check-label" for="progress-update">
+                            Show encoding progress
+                        </label>
+                    </div>
+                    <div class="progress">
+                        <div id="encoder-progress" class="progress-bar" role="progressbar" style="width: 0%" aria-label="encoder progress"></div>
+                    </div>
+                    <div>Exported file size: <span id="output-size">0</span> bytes</div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="mb-3">
+                    <button id="run-benchmark" type="button" class="btn btn-primary">Run Benchmark</button>
+                </div>
+
+                <div class="mb-3">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="download-output">
+                        <label class="form-check-label" for="download-output">
+                            Download output file
+                        </label>
+                    </div>
+                </div>
+                
+                <div class="m3-b">
+                    <div>Export time (seconds): <span id="export-time">0</span></div>
+                </div>
+            </div>
+
+
+        </main>    
+    </div>
+
     <script src="index.js"></script>
 </body>
 </html>

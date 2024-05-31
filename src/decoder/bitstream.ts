@@ -4,9 +4,11 @@ import { AvcNaluTransformer } from "./nalu-transformer";
 
 import { parseSPS } from 'nal-extractor'
 
+import { parse } from 'h264-sps-parser';
+
 export class AvcBitstream {
     public readonly config: Promise<VideoDecoderConfig>;
-    public readonly packets: ReadableStreamReader<EncodedVideoChunk>;
+    public readonly packets: ReadableStreamDefaultReader<EncodedVideoChunk>;
 
     constructor(
         h264File: Blob,
@@ -31,23 +33,20 @@ export class AvcBitstream {
 
         for (let { value, done } = await reader.read(); value !== undefined && !done; { value, done } = await reader.read()) {
             if (isTypedNalu(value, NalUnitType.SEQUENCE_PARAMETER_SET)) {
-
-                const { naluBody } = value;
-
-                // The RBSP of a NALU begins after the first byte of its body
                 const { 
                     profile_idc,
                     level_idc,
-                    pic_width_in_mbs_minus1,
+                    pic_width_in_mbs,
                     frame_mbs_only_flag,
-                    pic_height_in_map_units_minus1,
+                    pic_height_in_map_units,
+                    frame_cropping_flag,
                     frame_cropping,
-                } = parseSPS(naluBody.subarray(1));
+                } = parse(value.naluBody);
 
                 return {
-                    codec: `avc1.${profile_idc.toString(16).padStart(2, '0')}00${level_idc.toString(16).padStart(2, '0')}}`,
-                    codedWidth: ((pic_width_in_mbs_minus1 + 1) * 16) - (frame_cropping === false ? 0 : (frame_cropping.right_offset * 2 + frame_cropping.left_offset * 2)),
-                    codedHeight:  (2 - (frame_mbs_only_flag ? 1 : 0)) * ((pic_height_in_map_units_minus1 + 1) * 16) - (frame_cropping === false ? 0 : (frame_cropping.top_offset + frame_cropping.bottom_offset) * 2),
+                    codec: `avc1.${profile_idc.toString(16).padStart(2, '0')}00${level_idc.toString(16).padStart(2, '0')}`,
+                    codedWidth: (pic_width_in_mbs * 16) - (frame_cropping_flag === 0 ? 0 : (frame_cropping.right * 2 + frame_cropping.left * 2)),
+                    codedHeight:  (2 - (frame_mbs_only_flag ? 1 : 0)) * (pic_height_in_map_units * 16) - (frame_cropping_flag === 0 ? 0 : (frame_cropping.top + frame_cropping.bottom) * 2),
                     hardwareAcceleration,
                 };
             }
@@ -55,5 +54,4 @@ export class AvcBitstream {
 
         throw new Error('Premature end of AVC bitstream before an SPS NALU was found');
     }
-
 }
