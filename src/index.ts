@@ -33,7 +33,9 @@ function setProgress(timestampMicros: number, durationSeconds: number, outputSiz
 
 $('button#run-benchmark').click(async () => {
     $('button#run-benchmark').attr('disabled', 'disabled');
-
+    $('select').attr('disabled', 'disabled');
+    $('input').attr('disabled', 'disabled');
+    
     const inputFileName = $('select#input-file').val() as string;
     const decoderAcceleration = $('select#decoder-acceleration').val() as HardwareAcceleration;
     const decoderCanvas = $('canvas#decoder-canvas')[0] as HTMLCanvasElement;
@@ -47,8 +49,6 @@ $('button#run-benchmark').click(async () => {
     const bitrateMode = $('select#bitrate-mode').val() as VideoEncoderBitrateMode;
     const latencyMode = $('select#latency-mode').val() as LatencyMode;
     const showEncodingProgress = $('input#progress-update:checked').val() === 'on';
-
-    const downloadOutput = $('input#download-output:checked').val() === 'on';
 
     exportTimeText.val('Loading video.');
     outputSizeText.text('0');
@@ -85,36 +85,11 @@ $('button#run-benchmark').click(async () => {
         }
     );
 
-    const outputParts: Uint8Array[] = [];
-    let decoderDescription: Uint8Array | undefined = undefined;
-
     for (let packet = await encoder.packets.pull(); packet !== undefined; packet = await encoder.packets.pull()) {
-        const { chunk, metadata } = packet;
-
+        const { chunk } = packet;
         
         outputSizeBytes += chunk.byteLength;
         ++encodedPackets;
-
-        if (downloadOutput) {
-            if (decoderDescription === undefined && metadata?.decoderConfig?.description !== undefined) {
-                const description = metadata.decoderConfig.description;
-                const tmp = description instanceof ArrayBuffer ? new Uint8Array(description) : new Uint8Array(description.buffer).subarray(description.byteOffset, description.byteOffset + description.byteLength); 
-                decoderDescription = new Uint8Array(4 + tmp.byteLength);
-                decoderDescription.set(tmp, 4);
-                decoderDescription[0] = 0;
-                decoderDescription[1] = 0;
-                decoderDescription[2] = 0;
-                decoderDescription[3] = 1;
-            }
-
-            const part = new Uint8Array(chunk.byteLength + 4);
-            chunk.copyTo(part.subarray(4));
-            part[0] = 0;
-            part[1] = 0;
-            part[2] = 0;
-            part[3] = 1;
-            outputParts.push(part);
-        }
 
         if (showEncodingProgress) {
             setProgress(chunk.timestamp, performance.now() - startTimeMillis, outputSizeBytes);
@@ -125,22 +100,7 @@ $('button#run-benchmark').click(async () => {
 
     setProgress(0, durationSeconds, outputSizeBytes);
     alert(`Benchmark finished in ${durationSeconds.toFixed(3)} seconds.\n${decodedFrames} frames decoded, ${encodedPackets} packets encoded (${outputSizeBytes} bytes).`);
-    
-    if (downloadOutput) {
-        const outputFile = new File(decoderDescription !== undefined ? [
-            decoderDescription,
-            ...outputParts
-        ] : outputParts, `exported-${outputResolution}.h264`);
-        const outputUrl = URL.createObjectURL(outputFile);
-
-        const anchor = document.createElement('a');
-        anchor.download = outputFile.name;
-        anchor.href = outputUrl;
-        anchor.click();
-
-        setTimeout(() => {
-            URL.revokeObjectURL(outputUrl);
-        });
-    }
     $('button#run-benchmark').removeAttr('disabled');
+    $('select').removeAttr('disabled');
+    $('input').removeAttr('disabled');
 });
