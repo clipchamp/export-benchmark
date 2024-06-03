@@ -41,9 +41,5 @@ module.exports = {
             to: '.',
             context: 'src'
         },
-        {
-            from: 'src/resources',
-            to: 'resources'
-        },
     ],
 }
