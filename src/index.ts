@@ -4,24 +4,14 @@ import { Mp4Demuxer } from './decoder/mp4-demuxer';
 import { H264Decoder } from './decoder/h264-decoder';
 import { H264Encoder } from './encoder/h264-encoder';
 import { EncoderResolution, H264Profile } from './encoder/interfaces';
+import { loadInputFile } from './shared/input-files';
 
 const DEFAULT_FRAMERATE = 30;
-
-async function loadInputFile(inputFileName: string): Promise<File> {
-    const response = await fetch(`resources/videos/${inputFileName}`);
-
-    if (!response.ok) {
-        throw new Error(`Cannot load input file: HTTP/${response.status}`);
-    }
-
-    const blob = await response.blob();
-
-    return new File([blob], inputFileName)
-}
-
 const TOTAL_TIME_MICROS = 596380000; 
 
 const encoderProgressControl = $('#encoder-progress');
+const loadingProgressControl = $('#loading-progress');
+
 const exportTimeText = $('#export-time');
 const outputSizeText = $('#output-size');
 
@@ -35,6 +25,8 @@ $('button#run-benchmark').click(async () => {
     $('button#run-benchmark').attr('disabled', 'disabled');
     $('select').attr('disabled', 'disabled');
     $('input').attr('disabled', 'disabled');
+    loadingProgressControl.css('width', `0%`);
+    encoderProgressControl.css('width', `0%`);
     
     const inputFileName = $('select#input-file').val() as string;
     const decoderAcceleration = $('select#decoder-acceleration').val() as HardwareAcceleration;
@@ -53,7 +45,9 @@ $('button#run-benchmark').click(async () => {
     exportTimeText.val('Loading video.');
     outputSizeText.text('0');
 
-    const inputFile = await loadInputFile(inputFileName);
+    const inputFile = await loadInputFile(inputFileName, readProgress => {
+        loadingProgressControl.css('width', `${(readProgress * 100).toFixed(1)}%`);
+    });
     exportTimeText.val('Running...');
 
     const startTimeMillis = performance.now();
@@ -103,4 +97,6 @@ $('button#run-benchmark').click(async () => {
     $('button#run-benchmark').removeAttr('disabled');
     $('select').removeAttr('disabled');
     $('input').removeAttr('disabled');
+
+    loadingProgressControl.css('width', `0%`);
 });
