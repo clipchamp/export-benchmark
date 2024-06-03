@@ -1,14 +1,14 @@
+import { cacheFile, lookupFile } from "./file-cache";
+
 const AZURE_BLOBSTORE_ENDPOINT = 'https://exportperformance.blob.core.windows.net';
 const AZURE_BLOBSTORE_CONTAINER = 'videos';
 
-const CACHED_VIDEO_FILES: { [ fileName: string]: File } = {};
+export async function loadInputFile(inputFileName: string, progressCallback: (loaded: number, size: number) => void): Promise<File> {
+    const cachedFile = await lookupFile(inputFileName);
 
-export async function loadInputFile(inputFileName: string, progressCallback?: (progress: number) => void): Promise<File> {
-    if (inputFileName in CACHED_VIDEO_FILES) {
-        if (progressCallback !== undefined) {
-            progressCallback(1);
-        }
-        return CACHED_VIDEO_FILES[inputFileName];
+    if (cachedFile !== undefined) {
+        progressCallback(cachedFile.size, cachedFile.size);
+        return cachedFile;
     }
 
     const response = await fetch(`${AZURE_BLOBSTORE_ENDPOINT}/${AZURE_BLOBSTORE_CONTAINER}/${inputFileName}`);
@@ -22,6 +22,7 @@ export async function loadInputFile(inputFileName: string, progressCallback?: (p
     }
 
     const fileSize = Number.parseInt(response.headers.get('Content-Length')!);
+    progressCallback(0, fileSize);
 
     const reader = response.body.getReader();
 
@@ -33,13 +34,13 @@ export async function loadInputFile(inputFileName: string, progressCallback?: (p
             length += value.byteLength;
             chunks.push(value);
 
-            if (progressCallback !== undefined) {
-                progressCallback(length / fileSize);
-            }
+            progressCallback(length, fileSize);
         }
     }
 
-    const file = new File(chunks, inputFileName, { type: response.headers.get('Content-Type') ?? 'video/mp4' });
-    CACHED_VIDEO_FILES[inputFileName] = file;
-    return file;
+    const downloadedFile = new File(chunks, inputFileName, { type: response.headers.get('Content-Type') ?? 'video/mp4' });
+
+    await cacheFile(downloadedFile);
+
+    return downloadedFile;
 }

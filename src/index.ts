@@ -10,15 +10,30 @@ const DEFAULT_FRAMERATE = 30;
 const TOTAL_TIME_MICROS = 596380000; 
 
 const encoderProgressControl = $('#encoder-progress');
-const loadingProgressControl = $('#loading-progress');
-
 const exportTimeText = $('#export-time');
 const outputSizeText = $('#output-size');
 
-function setProgress(timestampMicros: number, durationSeconds: number, outputSizeBytes: number): void {
+
+function setExportProgress(timestampMicros: number, durationSeconds: number, outputSizeBytes: number): void {
     encoderProgressControl.css('width', `${Math.round(timestampMicros / TOTAL_TIME_MICROS * 100)}%`);
     exportTimeText.text(`${durationSeconds.toFixed(3)}`);
     outputSizeText.text(`${outputSizeBytes}`);
+}
+
+const loadingProgressControl = $('#loading-progress');
+const loadedBytesText = $('#loaded-bytes');
+const totalBytesText = $('#total-bytes');
+
+function setLoadingProgress(loadedBytes: number, totalBytes: number): void {
+    if (totalBytes === 0) {
+        loadingProgressControl.css('width', `0%`);
+        loadedBytesText.text('-');
+        totalBytesText.text('-');
+    } else {
+        loadingProgressControl.css('width', `${Math.round(loadedBytes / totalBytes * 100)}%`);
+        loadedBytesText.text(`${loadedBytes}`);
+        totalBytesText.text(`${totalBytes}`);
+    }
 }
 
 $('button#run-benchmark').click(async () => {
@@ -45,9 +60,7 @@ $('button#run-benchmark').click(async () => {
     exportTimeText.val('Loading video.');
     outputSizeText.text('0');
 
-    const inputFile = await loadInputFile(inputFileName, readProgress => {
-        loadingProgressControl.css('width', `${(readProgress * 100).toFixed(1)}%`);
-    });
+    const inputFile = await loadInputFile(inputFileName, setLoadingProgress);
     exportTimeText.val('Running...');
 
     const startTimeMillis = performance.now();
@@ -86,13 +99,14 @@ $('button#run-benchmark').click(async () => {
         ++encodedPackets;
 
         if (showEncodingProgress) {
-            setProgress(chunk.timestamp, performance.now() - startTimeMillis, outputSizeBytes);
+            setExportProgress(chunk.timestamp, performance.now() - startTimeMillis, outputSizeBytes);
         }
     }
 
     const durationSeconds = (performance.now() - startTimeMillis) / 1000;
 
-    setProgress(0, durationSeconds, outputSizeBytes);
+    setLoadingProgress(0, 0);
+    setExportProgress(0, durationSeconds, outputSizeBytes);
     alert(`Benchmark finished in ${durationSeconds.toFixed(3)} seconds.\n${decodedFrames} frames decoded, ${encodedPackets} packets encoded (${outputSizeBytes} bytes).`);
     $('button#run-benchmark').removeAttr('disabled');
     $('select').removeAttr('disabled');
