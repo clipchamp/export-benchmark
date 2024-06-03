@@ -12,12 +12,15 @@ const TOTAL_TIME_MICROS = 596380000;
 const encoderProgressControl = $('#encoder-progress');
 const exportTimeText = $('#export-time');
 const outputSizeText = $('#output-size');
+const decodedFramesText = $('#decoded-frames');
+const encodedPacketsText = $('#encoded-packets');
 
-
-function setExportProgress(timestampMicros: number, durationSeconds: number, outputSizeBytes: number): void {
+function setExportProgress(timestampMicros: number, durationSeconds: number, outputSizeBytes: number, decodedFrames: number, encodedPackets: number): void {
     encoderProgressControl.css('width', `${Math.round(timestampMicros / TOTAL_TIME_MICROS * 100)}%`);
     exportTimeText.text(`${durationSeconds.toFixed(3)}`);
     outputSizeText.text(`${outputSizeBytes}`);
+    decodedFramesText.text(`${decodedFrames}`);
+    encodedPacketsText.text(`${encodedPackets}`);
 }
 
 const loadingProgressControl = $('#loading-progress');
@@ -40,9 +43,10 @@ $('button#run-benchmark').click(async () => {
     $('button#run-benchmark').attr('disabled', 'disabled');
     $('select').attr('disabled', 'disabled');
     $('input').attr('disabled', 'disabled');
-    loadingProgressControl.css('width', `0%`);
-    encoderProgressControl.css('width', `0%`);
     
+    setExportProgress(0, 0, 0, 0, 0);
+    setLoadingProgress(0, 0);
+
     const inputFileName = $('select#input-file').val() as string;
     const decoderAcceleration = $('select#decoder-acceleration').val() as HardwareAcceleration;
     const decoderCanvas = $('canvas#decoder-canvas')[0] as HTMLCanvasElement;
@@ -57,11 +61,8 @@ $('button#run-benchmark').click(async () => {
     const latencyMode = $('select#latency-mode').val() as LatencyMode;
     const showEncodingProgress = $('input#progress-update:checked').val() === 'on';
 
-    exportTimeText.val('Loading video.');
-    outputSizeText.text('0');
 
     const inputFile = await loadInputFile(inputFileName, setLoadingProgress);
-    exportTimeText.val('Running...');
 
     const startTimeMillis = performance.now();
 
@@ -99,18 +100,16 @@ $('button#run-benchmark').click(async () => {
         ++encodedPackets;
 
         if (showEncodingProgress) {
-            setExportProgress(chunk.timestamp, performance.now() - startTimeMillis, outputSizeBytes);
+            setExportProgress(chunk.timestamp, performance.now() - startTimeMillis, outputSizeBytes, decodedFrames, encodedPackets);
         }
     }
 
     const durationSeconds = (performance.now() - startTimeMillis) / 1000;
 
     setLoadingProgress(0, 0);
-    setExportProgress(0, durationSeconds, outputSizeBytes);
-    alert(`Benchmark finished in ${durationSeconds.toFixed(3)} seconds.\n${decodedFrames} frames decoded, ${encodedPackets} packets encoded (${outputSizeBytes} bytes).`);
+    setExportProgress(0, durationSeconds, outputSizeBytes, decodedFrames, encodedPackets);
+    
     $('button#run-benchmark').removeAttr('disabled');
     $('select').removeAttr('disabled');
     $('input').removeAttr('disabled');
-
-    loadingProgressControl.css('width', `0%`);
 });

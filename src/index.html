@@ -121,7 +121,6 @@
                     <div class="progress">
                         <div id="encoder-progress" class="progress-bar" role="progressbar" style="width: 0%" aria-label="encoder progress"></div>
                     </div>
-                    <div>Exported file size: <span id="output-size">0</span> bytes</div>
                 </div>
             </div>
 
@@ -137,9 +136,25 @@
                         <div id="loading-progress" class="progress-bar" role="progressbar" style="width: 0%" aria-label="loading progress"></div>
                     </div>
                 </div>
+            </div>
 
-                <div class="m3-b">
-                    <div>Export time (seconds): <span id="export-time">0</span></div>
+            <div class="row">
+                <div class="mb-3"><hr></div>
+
+                <div class="mb-3">
+                    <h3>Benchmark results</h3>
+                </div>       
+
+                <div class="mb-3">
+                    <div>Export time: <span id="export-time">0</span> seconds</div>
+                </div>
+
+                <div class="mb-3">
+                    <div>Exported file size: <span id="output-size">0</span> bytes</div>
+                </div>
+
+                <div class="mb-3">
+                    <div><span id="decoded-frames">0</span> frames decoded, <span id="encoded-packets">0</span> packets encoded</span></div>
                 </div>
             </div>
 
