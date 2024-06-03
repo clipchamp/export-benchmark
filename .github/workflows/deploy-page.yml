@@ -27,36 +27,36 @@ jobs:
         run: |
           ls -lisa
           ls -lisa dist
-      - name: GitHub Pages deployment
-        uses: peaceiris/actions-gh-pages@v4
+      # - name: GitHub Pages deployment
+      #   uses: peaceiris/actions-gh-pages@v4
+      #   with:
+      #     deploy_key: ${{ secrets.ACTIONS_DEPLOY_KEY }}
+      #     publish_dir: dist
+      - name: Upload Pages Artefact
+        uses: actions/upload-pages-artifact@v3
         with:
-          deploy_key: ${{ secrets.ACTIONS_DEPLOY_KEY }}
-          publish_dir: dist
-  #     - name: Upload Pages Artefact
-  #       uses: actions/upload-pages-artifact@v3
-  #       with:
-  #         name: github-pages
-  #         path: dist # Path to your built static files
+          name: github-pages
+          path: dist # Path to your built static files
 
-  # # Deploy job
-  # deploy:
-  #   # Add a dependency to the build job
-  #   needs: build
+  # Deploy job
+  deploy:
+    # Add a dependency to the build job
+    needs: build
 
-  #   # Grant GITHUB_TOKEN the permissions required to make a Pages deployment
-  #   permissions:
-  #     pages: write      # to deploy to Pages
-  #     id-token: write   # to verify the deployment originates from an appropriate source
+    # Grant GITHUB_TOKEN the permissions required to make a Pages deployment
+    permissions:
+      pages: write      # to deploy to Pages
+      id-token: write   # to verify the deployment originates from an appropriate source
 
-  #   # Deploy to the github-pages environment
-  #   environment:
-  #     name: github-pages
-  #     url: ${{ steps.deployment.outputs.page_url }}
+    # Deploy to the github-pages environment
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
 
-  #   # Specify runner + deployment step
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - name: Deploy to GitHub Pages
-  #       id: deployment
-  #       uses: actions/deploy-pages@v4 # or specific "vX.X.X" version tag for this action
+    # Specify runner + deployment step
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4 # or specific "vX.X.X" version tag for this action
 
