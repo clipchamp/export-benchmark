@@ -111,6 +111,30 @@
                     </select>
                 </div>
 
+            </div>
+
+            <div class="row">
+                <div class="mb-3">
+                    <button id="run-benchmark" type="button" class="btn btn-primary">Run Benchmark</button>
+                </div>
+                
+            </div>
+
+            <div class="row">
+                <div class="mb-3"><hr></div>
+
+                <div class="mb-3">
+                    <h3>Benchmark results</h3>
+                </div>       
+
+                <div class="mb-3">
+                    <div>Input video loading progress (<span id="loaded-bytes">-</span>/<span id="total-bytes">-</span> bytes loaded):</div>
+
+                    <div class="progress">
+                        <div id="loading-progress" class="progress-bar" role="progressbar" style="width: 0%" aria-label="loading progress"></div>
+                    </div>
+                </div>
+
                 <div class="mb-3">
                     <div class="form-check">
                         <input class="form-check-input" type="checkbox" id="progress-update" checked>
@@ -122,28 +146,6 @@
                         <div id="encoder-progress" class="progress-bar" role="progressbar" style="width: 0%" aria-label="encoder progress"></div>
                     </div>
                 </div>
-            </div>
-
-            <div class="row">
-                <div class="mb-3">
-                    <button id="run-benchmark" type="button" class="btn btn-primary">Run Benchmark</button>
-                </div>
-                
-                <div class="mb-3">
-                    <div>Input video loading progress (<span id="loaded-bytes">-</span>/<span id="total-bytes">-</span> bytes loaded):</div>
-
-                    <div class="progress">
-                        <div id="loading-progress" class="progress-bar" role="progressbar" style="width: 0%" aria-label="loading progress"></div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="row">
-                <div class="mb-3"><hr></div>
-
-                <div class="mb-3">
-                    <h3>Benchmark results</h3>
-                </div>       
 
                 <div class="mb-3">
                     <div>Export time: <span id="export-time">0</span> seconds</div>
