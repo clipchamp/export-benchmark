@@ -3,7 +3,7 @@ import $ from 'jquery';
 import { Mp4Demuxer } from './decoder/mp4-demuxer';
 import { H264Decoder } from './decoder/h264-decoder';
 import { H264Encoder } from './encoder/h264-encoder';
-import { EncoderResolution, H264Profile } from './encoder/interfaces';
+import { EncoderResolution, H264Profile, UncloggingMethod } from './encoder/interfaces';
 import { loadInputFile } from './shared/input-files';
 
 const DEFAULT_FRAMERATE = 30;
@@ -59,6 +59,8 @@ $('button#run-benchmark').click(async () => {
     const bitrate = Number.parseInt($('input#encoding-bitrate').val() as string);
     const bitrateMode = $('select#bitrate-mode').val() as VideoEncoderBitrateMode;
     const latencyMode = $('select#latency-mode').val() as LatencyMode;
+    const uncloggingMethod = $('select#unclogging-method').val() as UncloggingMethod;
+    
     const showEncodingProgress = $('input#progress-update:checked').val() === 'on';
 
 
@@ -90,7 +92,8 @@ $('button#run-benchmark').click(async () => {
             bitrate,
             bitrateMode,
             latencyMode
-        }
+        },
+        uncloggingMethod
     );
 
     for (let packet = await encoder.packets.pull(); packet !== undefined; packet = await encoder.packets.pull()) {

@@ -111,6 +111,14 @@
                     </select>
                 </div>
 
+                <div class="mb-3">
+                    <label for="unclogging-method" class="form-label">Encoder back-pressure resolution method:</label>
+                    <select id="unclogging-method" class="form-select">
+                        <option selected value="dequeue_event">VideoEncoder dequeue event (Clipchamp production)</option>
+                        <option value="polling_output">Timer-based polling, output-based polling and dequeue event</option>
+                        <option value="flush_encoder">Flush encoder</option>
+                    </select>
+                </div>
             </div>
 
             <div class="row">

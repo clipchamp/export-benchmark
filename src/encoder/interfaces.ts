@@ -15,3 +15,5 @@ export const ENCODER_RESOLUTION = {
 }
 
 export type EncoderResolution = keyof typeof ENCODER_RESOLUTION;
+
+export type UncloggingMethod = 'dequeue_event' | 'polling_output' | 'flush_encoder';
