@@ -7,7 +7,9 @@ import { EncoderResolution, H264Profile, UncloggingMethod } from './encoder/inte
 import { loadInputFile } from './shared/input-files';
 
 const DEFAULT_FRAMERATE = 30;
-const TOTAL_TIME_MICROS = 596380000; 
+
+const TOTAL_TIME_MICROS_SAMPLE_FILES = 596380000; 
+const TOTAL_TIME_MICROS_MAYA_FILES = 187266667;
 
 const encoderProgressControl = $('#encoder-progress');
 const exportTimeText = $('#export-time');
@@ -15,12 +17,18 @@ const outputSizeText = $('#output-size');
 const decodedFramesText = $('#decoded-frames');
 const encodedPacketsText = $('#encoded-packets');
 
-function setExportProgress(timestampMicros: number, durationSeconds: number, outputSizeBytes: number, decodedFrames: number, encodedPackets: number): void {
-    encoderProgressControl.css('width', `${Math.round(timestampMicros / TOTAL_TIME_MICROS * 100)}%`);
-    exportTimeText.text(`${durationSeconds.toFixed(3)}`);
-    outputSizeText.text(`${outputSizeBytes}`);
-    decodedFramesText.text(`${decodedFrames}`);
-    encodedPacketsText.text(`${encodedPackets}`);
+type ExportProgressFunction = (timestampMicros: number, durationSeconds: number, outputSizeBytes: number, decodedFrames: number, encodedPackets: number) => void;
+
+function getExportProgressFunction(inputFileName: string): ExportProgressFunction {
+    const totalTimeMicros = inputFileName.startsWith('sample') ? TOTAL_TIME_MICROS_SAMPLE_FILES : TOTAL_TIME_MICROS_MAYA_FILES;
+
+    return (timestampMicros: number, durationSeconds: number, outputSizeBytes: number, decodedFrames: number, encodedPackets: number) => {
+        encoderProgressControl.css('width', `${Math.round(timestampMicros / totalTimeMicros * 100)}%`);
+        exportTimeText.text(`${durationSeconds.toFixed(3)}`);
+        outputSizeText.text(`${outputSizeBytes}`);
+        decodedFramesText.text(`${decodedFrames}`);
+        encodedPacketsText.text(`${encodedPackets}`);
+    };
 }
 
 const loadingProgressControl = $('#loading-progress');
@@ -44,8 +52,6 @@ $('button#run-benchmark').click(async () => {
     $('select').attr('disabled', 'disabled');
     $('input').attr('disabled', 'disabled');
     
-    setExportProgress(0, 0, 0, 0, 0);
-    setLoadingProgress(0, 0);
 
     const inputFileName = $('select#input-file').val() as string;
     const decoderAcceleration = $('select#decoder-acceleration').val() as HardwareAcceleration;
@@ -63,6 +69,10 @@ $('button#run-benchmark').click(async () => {
     
     const showEncodingProgress = $('input#progress-update:checked').val() === 'on';
 
+    const setExportProgress = getExportProgressFunction(inputFileName);
+    
+    setExportProgress(0, 0, 0, 0, 0);
+    setLoadingProgress(0, 0);
 
     const inputFile = await loadInputFile(inputFileName, setLoadingProgress);
 
